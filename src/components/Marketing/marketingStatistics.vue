@@ -91,7 +91,8 @@
                     <h3>财务数据</h3>
                   </div>
                   <div class="col-lg-2 col-sm-4">已结账门店：{{list1.num1}} </div>
-                  <div class="col-lg-2 col-sm-4">已结账总额：{{list1.num2}} 元</div>
+                  <div class="col-lg-2 col-sm-4" v-if="list1.num2">已结账总额：{{list1.num2 | currency}} 元</div>
+                  <div class="col-lg-2 col-sm-4" v-else>已结账总额：0.00元</div>
                 </div>
                 <br>
                 <div class="row">

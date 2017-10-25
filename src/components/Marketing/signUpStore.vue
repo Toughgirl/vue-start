@@ -134,15 +134,39 @@
       nav_active();
       total();
       var self = this;
+
+      //              运营商地址限制
+      var param = new Object();
+      param.access_token = store.state.user.access_token
+      param.user_id = store.state.user.userId
+      var json = JSON.stringify(param);
+      $.ajax({
+        url:store.state.baseUrl.data_serv_url+"/system/check_region",
+        data:{parameter:json},
+        type:"post",
+        dataType:"json",
+        success:function (data) {
+          self.region1=data.hmac;
+          self.region2=data.hmac.substr(0, 2)+'0000';
+          var arr2=[self.region1];
+          $(self.$data.region).attr("city",arr2);
+          $("#city1").val(self.region1)
+          $(".province-select").attr("disabled","disabled");
+          $(".city-select").attr("disabled","disabled");
+          total();
+        },
+        error:function () {
+
+        }
+      });
+
+
       function total(){
         var param = new Object();
         param.access_token = store.state.user.access_token
         param.user_id = store.state.user.userId
         var regionId="";
-        if($("#city1").val()==""){
-          regionId="510000";
-        }
-        else if($("#district1").val()==""){
+        if($("#district1").val()==""){
           regionId=$("#city1").val();
         }else{
           regionId =$("#district1").val();

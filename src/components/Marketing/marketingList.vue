@@ -42,10 +42,10 @@
                     签约门店：<span v-if="list.quantity">{{list.quantity}}</span><span v-else>0</span>
                   </div>
                   <div class="form-group col-lg-3 col-md-3 col-sm-12">
-                    目标销量：<span v-if="list.gmoeny">{{list.gmoeny}}万</span><span v-else>0</span>
+                    目标销量：<span v-if="list.gmoeny">{{list.gmoeny | currency}}万</span><span v-else>0.00万</span>
                   </div>
                   <div class="form-group col-lg-3 col-md-3 col-sm-12">
-                    实际销量：<span v-if="list.actual_sales">{{list.actual_sales}}元</span><span v-else>0</span>
+                    实际销量：<span v-if="list.actual_sales">{{list.actual_sales | currency}}元</span><span v-else>0.00元</span>
                   </div>
                 </div>
               </div>
@@ -241,13 +241,21 @@
       "columns": [
         { "data": "no" },
         { "data": "cname" },
-        { "data": "gmoney" },
+        { "data": "gmoney",
+          "render":function(data, type, full,callback) {
+            return data.toFixed(2);
+          }
+        },
         { "data": "rate",
           "render":function(data, type, full,callback) {
             return data.toFixed(2);
           }
         },
-        { "data": "smoeny" },
+        { "data": "smoeny",
+          "render":function(data, type, full,callback) {
+            return data.toFixed(2);
+          }
+        },
         { "data": "stime" },
         { "data": "etime" },
         { "data": "sname" },

@@ -204,40 +204,57 @@
       }
     });
 
-    var defer = $.Deferred();
-    var DelayedLoading= function(defer){
-      var total = function(){
-        var param = new Object();
-        param.access_token = store.state.user.access_token
-        param.user_id = store.state.user.userId
-        var month =$("#month").val();
-        var storeName =$("#storeName").val();
-        var regionId=$("#district1").val();
-        var request_parames = new Object();
-        request_parames.month = month;
-        request_parames.regionId = regionId;
-        request_parames.keywords = storeName;
-        param.request_parames=request_parames;
-        var json = JSON.stringify(param);
+//    var defer = $.Deferred();
+//    var DelayedLoading= function(defer){
+//
+//      setTimeout(total,1);
+//      return defer;
+//    };
+//    DelayedLoading();
+    var myDate = new Date();
+    var date=""
+    if(myDate.getMonth()<10&&myDate.getMonth()!=0){
+      date = "0"+myDate.getMonth();
+    }
+    else if(myDate.getMonth()==0){
+      date = "12";
+    }
+    $("#month").val(date);
+    total();
+    function total(){
+      var param = new Object();
+      param.access_token = store.state.user.access_token
+      param.user_id = store.state.user.userId
+      var month =$("#month").val();
+      var storeName =$("#storeName").val();
+      var regionId=$("#district1").val();
+      var request_parames = new Object();
+      request_parames.month = month;
+      request_parames.regionId = regionId;
+      request_parames.keywords = storeName;
+      param.request_parames=request_parames;
+      var json = JSON.stringify(param);
 
-        $.ajax({
-          url:store.state.baseUrl.data_serv_url+"/system/salesPerformance/total",
-          data:{parameter:json},
-          type:"post",
-          dataType:"json",
-          success:function (data) {
-            self.list = eval('(' + data.hmac + ')');
-            //console.log(self.list.is_lively_cust)
-          },
-          error:function () {
-
+      $.ajax({
+        url:store.state.baseUrl.data_serv_url+"/system/salesPerformance/total",
+        data:{parameter:json},
+        type:"post",
+        dataType:"json",
+        success:function (data) {
+          self.list = eval('(' + data.hmac + ')');
+          if(self.list.received_money!=null){
+            self.list.received_money=parseInt(self.list.received_money).toFixed(2);
           }
-        })
-      }
-      setTimeout(total,1);
-      return defer;
-    };
-    DelayedLoading();
+          if(self.list.total!=null){
+            self.list.total=parseInt(self.list.total).toFixed(2);
+          }
+
+        },
+        error:function () {
+
+        }
+      })
+    }
     $("#achievements").dataTable({
       "bAutoWidth": false,
       "processing": true,
@@ -319,28 +336,9 @@
 
 
     });
-
-
-
-    date();
-    function date(){
-      var myDate = new Date();
-      var date=""
-      if(myDate.getMonth()<10&&myDate.getMonth()!=0){
-        date = "0"+myDate.getMonth();
-      }
-      else if(myDate.getMonth()==0){
-        date = "12";
-      }
-      $("#month").val(date);
-      searchList();
-      DelayedLoading();
-    }
-
-
     $("#searchList").click(function(){
       searchList();
-      DelayedLoading();
+      total();
     });
 
     // 搜索
