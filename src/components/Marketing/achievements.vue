@@ -243,10 +243,10 @@
         success:function (data) {
           self.list = eval('(' + data.hmac + ')');
           if(self.list.received_money!=null){
-            self.list.received_money=parseInt(self.list.received_money).toFixed(2);
+            self.list.received_money=parseFloat(self.list.received_money).toFixed(2);
           }
           if(self.list.total!=null){
-            self.list.total=parseInt(self.list.total).toFixed(2);
+            self.list.total=parseFloat(self.list.total).toFixed(2);
           }
 
         },
@@ -285,24 +285,63 @@
         }
       },
       "columns": [
-        { "data": "i" },
+        {
+          "data" : null,
+          "render" : function(data, type, full, meta){
+            return meta.row + 1 + meta.settings._iDisplayStart;
+          }
+        },
         { "data": "cust_company_name" },
         {
           "data": "received_money",//json
           "render": function (data,type,full,callback) {
-            var received_money=data.toFixed(2);
+            var received_money="";
+            if(data!=null){
+              received_money=data.toFixed(2);
+            }else{
+              received_money=0;
+              received_money=received_money.toFixed(2)
+            }
             return received_money
           }
         },
         {
           "data": "total",//json
           "render": function (data,type,full,callback) {
-            var total=data.toFixed(2);
+            var total="";
+            if(data!=null){
+              total=data.toFixed(2);
+            }else{
+              total=0;
+              total=total.toFixed(2)
+            }
             return total
           }
         },
-        { "data": "is_lively_cust" },
-        { "data": "overdue_number" }
+        {
+          "data": "is_lively_cust",//json
+          "render": function (data,type,full,callback) {
+            var is_lively_cust="";
+            if(data!=null){
+              is_lively_cust=data;
+            }else{
+              is_lively_cust="否";
+            }
+            return is_lively_cust
+          }
+        },
+        {
+          "data": "overdue_number",//json
+          "render": function (data,type,full,callback) {
+            var overdue_number="";
+            if(data!=null){
+              overdue_number=data;
+            }else{
+              overdue_number=0;
+            }
+            return overdue_number
+          }
+        }
       ],
       "language": {
         "lengthMenu": "每页 _MENU_ 条记录",

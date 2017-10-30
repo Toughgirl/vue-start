@@ -59,7 +59,7 @@
                     <span>{{list.cust_order_num}}</span>
                   </div>
                   <div class="col-lg-4"><label>应收/应付款：</label>
-                    <span>{{list.total_amount}}元</span>
+                    <span>{{list.total_amount | currency}}元</span>
                   </div>
                   <div class="col-lg-4"><label>付款时间：</label>
                     <span>{{list.create_date}}</span>

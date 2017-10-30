@@ -30,7 +30,10 @@
               财务管理
             </li>
             <li>
-              已结算
+              <a href="#/SettledList_">结算管理</a>
+            </li>
+            <li>
+              采购明细
             </li>
           </ol>
         </div>
@@ -42,51 +45,71 @@
             <div class="ibox">
               <div class="ibox-title">
                 <div class="row">
-                  <div class="form-group col-lg-6 col-sm-12">
+                  <div class="form-group col-lg-5 col-md-8 col-sm-8 col-xs-12">
                     <div class="input-group">
-                      <div class="input-group-addon">结算日期：</div>
-                      <div style="width: 100%;float: left;height: 32px;">
-                        <div class="row">
-                          <div class="form-group col-lg-5 col-sm-5 col-xs-5"><input type="text"style="height:32px;" class="Wdate form-control"  placeholder="选择开始时间" readonly="readonly" name="dateStart" id="dateStart" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'dateEnd\')}'})"></div>
-                          <div class="form-group col-lg-1 col-sm-1 col-xs-1 text-center" style="line-height:32px;">-</div>
-                          <div class="form-group col-lg-5 col-sm-5 col-xs-5"><input type="text" style="height:32px;" class="Wdate form-control"  placeholder="选择结束时间" readonly="readonly" name="dateEnd" id="dateEnd" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'dateStart\')}'})"></div>
+                      <div class="">
+                        <select class="form-control" id="queryType" style="width:20%;float: left;height: 32px;line-height: 32px;padding: 6px">
+                          <option value="1">完成时间</option>
+                          <option value="2">提交时间</option>
+                        </select>
+                        <div style="width: 80%;float: left;height: 32px;">
+                          <input type="text" class="Wdate form-control" style="float: left;height: 32px;width:40%"
+                                 placeholder="选择开始时间" readonly="readonly" name="dateStart" id="dateStart"
+                                 onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'dateEnd\')}'})">
+                          <span style="float: left;width: 4%;margin: 0 1%;text-align: center;line-height: 32px;">-</span>
+                          <input type="text" class="Wdate form-control" style="float: left;height: 32px;width:40%"
+                                 placeholder="选择结束时间" readonly="readonly" name="dateEnd" id="dateEnd"
+                                 onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'dateStart\')}'})">
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="form-group col-lg-2 col-sm-8 col-xs-12">
-                    <input type="text" class="form-control" placeholder="请输入结算单号/所属门店" id="storeName">
+                  <div class="form-group col-lg-3 col-md-6 col-sm-8 col-xs-12">
+                    <input class="form-control" placeholder="输入退货单号/商品名称" id="storeName">
                   </div>
-                  <div class="form-group col-lg-3 col-sm-4 col-xs-12">
+                  <div class="form-group col-lg-2 col-md-4 col-sm-4 col-xs-12">
                     <button class="btn btn-red" id="clearCondition">清除条件</button>
                     <button class="btn btn-info" id="searchList">查询</button>
                   </div>
+                </div>
 
+              </div>
+              <div class="ibox-content">
+                <div class="form-group">
+                  <div class="text-danger col-lg-12 col-md-12 col-sm-12 col-xs-12">总额总计:<span v-if="list">{{list | currency}}</span><span v-else>0.00</span>元</div>
                 </div>
               </div>
-              <div class="ibox-content" v-on:click="openImageProxy($event)">
+              <div class="ibox-content">
                 <div class="container-fluid">
                   <table id="DataTable" class="table  table-bordered" cellspacing="0" width="100%">
                     <thead>
                     <tr>
-                      <th>结算单号</th>
-                      <th>所属门店</th>
-                      <th>应付货款（元）</th>
-                      <th>滞纳金（元）</th>
-                      <th>结算日期</th>
-                      <th>支付状态</th>
-                      <th>操作</th>
+                      <th>退货单号</th>
+                      <th>商品名称</th>
+                      <th>适用车型</th>
+                      <th>单价</th>
+                      <th>数量</th>
+                      <th>总额</th>
+                      <th>提交时间</th>
+                      <th>完成时间</th>
                     </tr>
                     </thead>
                   </table>
                 </div>
               </div>
+              <div class="ibox-content">
+                <div class="form-group">
+                  <a href="#/SettledList_">
+                    <button class="btn btn-white">返回</button>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
       <HtmlFooter></HtmlFooter>
+
     </div>
   </div>
 </template>
@@ -95,26 +118,20 @@
   import { mapState } from 'vuex'
   import { mapActions } from 'vuex'
   import { USER_SIGNOUT } from 'src/store/user/login'
-  require('src/vuex/modules/financialManagement/SettledList.js')
   import HtmlFooter from 'src/components/footer.vue'
   import HtmlHeader from 'src/components/header.vue'
   import 'babel-polyfill';
-  import RegionPicker from 'vue-region-picker'
   import store from 'src/vuex/store.js'
-  import CHINA_REGION from 'china-area-data'
   import inspinia from 'src/assets/js/inspinia.js'
   import nav_active from 'src/assets/js/nav.js'
-  Vue.use(RegionPicker, {
-    region: CHINA_REGION,
-    vueVersion: 2
-  })
+  import laypage from 'laypage'
+  let Base64 = require('js-base64').Base64;
   export default {
     data(){
     return{
-      date: '',
-      date1: '',
-      region: {}
-
+      list:"",
+      list_:"",
+      list1:"",
     }
   },
   computed: mapState({ user: state => state.user }),
@@ -125,60 +142,74 @@
       this.$router.replace({ path: '/login' })
     },
 
-    change:function(s){
-      //console.log(s)
-    },
-    openImageProxy: function (event) {
-      if (event.target.nodeName === 'BUTTON') {
-        var $html= event.target;
-        var SettlementId = $($html).attr("SettlementId");
-        //console.log(SettlementId)
-        this.$router.replace({ path: '/SettledDetail_/' + SettlementId})
-        event.stopPropagation();
-      }
-    }
-
   },
   mounted:function () {
-    function clearCondition(){
-      $("#status").val("");
-      $("#storeName").val("");
-      $(".title").val("");
-      $("#dateStart").val("");
-      $("#dateEnd").val("");
-      $(".province-select").val("");
-      $(".city-select").val("");
-      $(".district-select").val("");
-    };
-    $("#clearCondition").click(function(){
-      clearCondition();
-      searchList();
-    });
     inspinia();
     nav_active();
+//采购统计
+    total();
+    var self = this;
+    function total(){
+      var param = new Object();
+      param.access_token = store.state.user.access_token;
+      param.user_id = store.state.user.userId;
+      var queryType =$("#queryType").val();
+      var storeName =$("#storeName").val();
+      var dateStart =$("#dateStart").val();
+      var dateEnd =$("#dateEnd").val();
+      var $href = (window.location.href).split("/");
+      var id= $href[$href.length-1];
+      var request_parames = new Object();
+      request_parames.settleNo = storeName;
+      request_parames.tag = 2;
+      request_parames.id = id;
+      request_parames.startTime = dateStart;
+      request_parames.endTime = dateEnd;
+      request_parames.queryType = queryType;
+      param.request_parames=request_parames;
+      var json = JSON.stringify(param);
+      $.ajax({
+        url:store.state.baseUrl.data_serv_url+"/system/companySettlement/totals1",
+        data:{parameter:json},
+        type:"post",
+        dataType:"json",
+        success:function (data) {
+          self.list = eval('(' + data.hmac + ')')
+          self.list= parseFloat(self.list);
+        },
+        error:function () {
+
+        }
+      });
+    }
     $("#DataTable").dataTable({
       "bAutoWidth": false,
       "processing": true,
       "serverSide": true,//服务器分页
       "iDisplayLength": 10,//首次加载的数据条数
       "ajax": {
-        //"url": "/SettlementList",
-        "url": store.state.baseUrl.data_serv_url+"/system/companySettlement/page",
+        "url": store.state.baseUrl.data_serv_url+"/system/companySettlement/page_sett_new",
         "type": "POST",
         "dataSrc": "hmac.data",//默认data，也可以写其他的，格式化table的时候取里面的数据
         "data":function (d) {//d 是原始的发送给服务器的数据，默认很长。
           var param = new Object();
           param.access_token = store.state.user.access_token
           param.user_id = store.state.user.userId
+          var queryType =$("#queryType").val();
           var storeName =$("#storeName").val();
           var dateStart =$("#dateStart").val();
           var dateEnd =$("#dateEnd").val();
+          var $href = (window.location.href).split("/");
+          var id= $href[$href.length-1];
           var request_parames = new Object();
           request_parames.start = d.start;
           request_parames.pageSize = d.length;
+          request_parames.settleNo = storeName;
+          request_parames.tag = 2;
+          request_parames.id = id;
           request_parames.startTime = dateStart;
           request_parames.endTime = dateEnd;
-          request_parames.keywords = storeName;
+          request_parames.queryType = queryType;
           param.request_parames=request_parames;
           var data = JSON.stringify(param);
           var obj = {};
@@ -190,35 +221,27 @@
 
       },
       "columns": [
-        { "data": "company_settlement_num" },
-        { "data": "company_name" },
+        { "data": "onum" },
+        { "data": "pname" },
+        { "data": "car_name" },
+
+        {
+          "data": "sell_price",//json
+          "render": function (data,type,full,callback) {
+            var sell_price=data.toFixed(2);
+            return sell_price
+          }
+        },
+        { "data": "quantity" },
         {
           "data": "amount",//json
           "render": function (data,type,full,callback) {
             var amount=data.toFixed(2);
-            return amount
+            return amount;
           }
         },
-        {
-          "data": "late_fee",//json
-          "render": function (data,type,full,callback) {
-            var late_fee=data.toFixed(2);
-            return late_fee
-          }
-        },
-        { "data": "create_date" },
-        { "data": "status_name" },
-        //操作列
-        {
-          "data": "",//json
-          "render": function (data,type,full,callback) {
-            var datahtml='';
-            datahtml+='<button class="btn btn-info btn-xs" SettlementId="'+full.company_settlement_id+'">详情</button>'
-            return datahtml;
-          }
-        }
-
-
+        { "data": "ctime" },
+        { "data": "atime" }
       ],
       "language": {
         "lengthMenu": "每页 _MENU_ 条记录",
@@ -251,16 +274,28 @@
       "bStateSave": true
 
 
+
     });
 
-    $("#searchList").click(function(){
-      searchList();
-    });
 
-    // 搜索
-    function searchList(){
+
+//清空搜索1
+    function clearCondition(){
+      $("#storeName").val("");
+      $("#dateStart").val("");
+      $("#dateEnd").val("");
+    };
+    $("#clearCondition").click(function(){
+      clearCondition();
+      total();
       $('#DataTable').DataTable().draw();
-    }
+    });
+    $("#searchList").click(function(){
+      total();
+      $('#DataTable').DataTable().draw();
+    });
+
+
   },
   components:{
     HtmlFooter,
